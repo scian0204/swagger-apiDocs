@@ -6,16 +6,12 @@ servers:
 - url: http://localhost:8080
   description: Generated server url
 tags:
-- name: Party
-  description: 파티 API
-- name: Tag
-  description: 태그 API
+- name: Apart
+  description: 아파트 API
 - name: User
   description: 유저 API
-- name: Board
-  description: 게시판 API
-- name: Comment
-  description: 댓글 API
+- name: Report
+  description: 소음신고 API
 paths:
   /api/users/modify:
     put:
@@ -32,62 +28,28 @@ paths:
       responses:
         "200":
           description: OK
-      x-swagger-router-controller: User
-  /api/comment/:
-    put:
-      tags:
-      - Comment
-      summary: 댓글 수정
-      operationId: updateComment
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/CommentUpdateRequest'
-        required: true
-      responses:
-        "200":
-          description: OK
-      x-swagger-router-controller: Comment
-    post:
-      tags:
-      - Comment
-      summary: 댓글 삭제
-      operationId: deleteComment
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/CommentDeleteRequest'
-        required: true
-      responses:
-        default:
-          description: "삭제 성공: true<br>삭제 실패: false"
           content:
             '*/*':
               schema:
-                type: boolean
-                x-content-type: '*/*'
-      x-swagger-router-controller: Comment
-  /api/boards/update:
+                $ref: '#/components/schemas/ResponseUser'
+      x-swagger-router-controller: User
+  /api/Report/update:
     put:
       tags:
-      - Board
-      summary: 게시글 수정
+      - Report
       operationId: updateBoard
       requestBody:
-        description: "태그 수정시 주의사항:<br>태그 추가 시 tagName 배열에 추가할 것<br>기존 태그의 삭제 여부와 상\
-          관없이 그대로 tagId 배열에 넣을 것<br>ex)현재글의 태그 목록 [1, 2, 3]에서 3을 삭제 후 '게임' 태그 추가시\
-          \ -> tagId[1, 2], tagName['게임']"
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/BoardUpdateRequest'
+              type: object
+              additionalProperties:
+                type: object
         required: true
       responses:
         "200":
           description: OK
-      x-swagger-router-controller: Board
+      x-swagger-router-controller: Report
   /api/users/signup:
     post:
       tags:
@@ -106,8 +68,7 @@ paths:
           content:
             '*/*':
               schema:
-                type: string
-                x-content-type: '*/*'
+                $ref: '#/components/schemas/ResponseUser'
       x-swagger-router-controller: User
   /api/users/login:
     post:
@@ -127,8 +88,7 @@ paths:
           content:
             '*/*':
               schema:
-                type: string
-                x-content-type: '*/*'
+                $ref: '#/components/schemas/ResponseString'
       x-swagger-router-controller: User
   /api/users/delete:
     post:
@@ -148,115 +108,99 @@ paths:
           content:
             '*/*':
               schema:
-                type: string
-                x-content-type: '*/*'
+                $ref: '#/components/schemas/ResponseObject'
       x-swagger-router-controller: User
-  /api/party/leave:
+  /api/apart/regist:
     post:
       tags:
-      - Party
-      summary: 파티 탈퇴
-      operationId: leaveParty
+      - Apart
+      operationId: registApart
       requestBody:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/PartyUserRequest'
+              $ref: '#/components/schemas/ApartInfoRequest'
         required: true
       responses:
         "200":
           description: OK
-      x-swagger-router-controller: Party
-  /api/party/join:
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ApartInfo'
+      x-swagger-router-controller: Apart
+  /api/apart/ho:
     post:
       tags:
-      - Party
-      summary: 파티 가입
-      operationId: joinParty
+      - Apart
+      summary: 아파트 동 별 호 목록 API
+      description: 아파트ID와 동으로 호 목록 검색하는 API
+      operationId: getHoList
       requestBody:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/PartyUserRequest'
+              $ref: '#/components/schemas/HoRequest'
         required: true
       responses:
         default:
-          description: "가입성공 : 가입한 파티ID<br>가입실패 : null"
+          description: 아파트 동 별 호 목록 리스트
           content:
             '*/*':
               schema:
-                type: integer
-                format: int32
+                type: array
+                items:
+                  type: string
                 x-content-type: '*/*'
-      x-swagger-router-controller: Party
-  /api/comment/write:
+      x-swagger-router-controller: Apart
+  /api/Report/write:
     post:
       tags:
-      - Comment
-      summary: 댓글 작성
-      operationId: writeComment
-      requestBody:
-        description: target에는 답글에 대상이 되는 cmtId를 넣거나 일반 댓글이라면 해당 항목을 제외하고 요청
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/CommentWriteRequest'
-        required: true
-      responses:
-        default:
-          description: 작성된 댓글의 cmtId
-          content:
-            '*/*':
-              schema:
-                type: integer
-                format: int32
-                x-content-type: '*/*'
-      x-swagger-router-controller: Comment
-  /api/boards/write:
-    post:
-      tags:
-      - Board
-      summary: 게시글 작성
+      - Report
       operationId: insertBoard
+      parameters:
+      - name: file
+        in: query
+        required: true
+        style: form
+        explode: true
+        schema:
+          type: string
+          format: binary
       requestBody:
-        description: "tagName의 경우 같은 이름의 태그 존재 시 기존 태그 ID가 등록되며, 새로운 태그면 새로 태그 생성\
-          \ 후 해당 ID 등록"
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/BoardWriteRequest'
+              type: object
+              additionalProperties:
+                type: object
         required: true
       responses:
-        default:
-          description: 등록된 게시글의 boardId
-          content:
-            '*/*':
-              schema:
-                type: integer
-                format: int32
-                x-content-type: '*/*'
-      x-swagger-router-controller: Board
-  /api/boards/delete:
+        "200":
+          description: OK
+      x-swagger-router-controller: Report
+  /api/Report/delete:
     post:
       tags:
-      - Board
-      summary: 게시글 삭제
+      - Report
       operationId: deleteBoardPost
       requestBody:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/BoardDeleteRequest'
+              type: object
+              additionalProperties:
+                type: object
         required: true
       responses:
-        default:
-          description: "삭제 성공 : 0<br>userId 일치하지 않음 : 1"
+        "200":
+          description: OK
           content:
             '*/*':
               schema:
                 type: string
                 x-content-type: '*/*'
-      x-swagger-router-controller: Board
+      x-swagger-router-controller: Report
   /api/users/logout:
     get:
       tags:
@@ -266,6 +210,10 @@ paths:
       responses:
         "200":
           description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ResponseString'
       x-swagger-router-controller: User
   /api/users/isLogin:
     get:
@@ -279,8 +227,7 @@ paths:
           content:
             '*/*':
               schema:
-                type: object
-                x-content-type: '*/*'
+                $ref: '#/components/schemas/ResponseString'
       x-swagger-router-controller: User
   /api/users/isIdDup/{userId}:
     get:
@@ -302,17 +249,17 @@ paths:
           content:
             '*/*':
               schema:
-                type: boolean
-                x-content-type: '*/*'
+                $ref: '#/components/schemas/ResponseBoolean'
       x-swagger-router-controller: User
-  /api/tag/{tagName}:
+  /api/apart/{apartName}:
     get:
       tags:
-      - Tag
-      summary: 해당 태그이름이 포함된 태그 목록
-      operationId: getListbyTagName
+      - Apart
+      summary: 아파트 목록 API
+      description: 아파트 이름으로 아파트 목록 검색하는 API
+      operationId: getApartList
       parameters:
-      - name: tagName
+      - name: apartName
         in: path
         required: true
         style: simple
@@ -325,75 +272,17 @@ paths:
           content:
             '*/*':
               schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/Tag'
-                x-content-type: '*/*'
-      x-swagger-router-controller: Tag
-  /api/tag/rank:
+                $ref: '#/components/schemas/ResponseListApartInfo'
+      x-swagger-router-controller: Apart
+  /api/apart/dong/{apartId}:
     get:
       tags:
-      - Tag
-      summary: 가장 많이 사용된 태그 순위
-      operationId: getTagsByRank
-      responses:
-        default:
-          description: cnt - 해당 태그가 사용된 횟수
-          content:
-            '*/*':
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/TagRankResponse'
-                x-content-type: '*/*'
-      x-swagger-router-controller: Tag
-  /api/party/{userId}:
-    get:
-      tags:
-      - Party
-      summary: 유저별 가입한 파티 목록 - 내림차순
-      operationId: getUserJoinParty
+      - Apart
+      summary: 아파트별 동 목록 API
+      description: 아파트ID로 동 목록 검색하는 API
+      operationId: getDongList
       parameters:
-      - name: pageable
-        in: query
-        required: true
-        style: form
-        explode: true
-        schema:
-          $ref: '#/components/schemas/Pageable'
-      - name: userId
-        in: path
-        required: true
-        style: simple
-        explode: false
-        schema:
-          type: string
-      responses:
-        "200":
-          description: OK
-          content:
-            '*/*':
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/BoardListResponse'
-                x-content-type: '*/*'
-      x-swagger-router-controller: Party
-  /api/comment/list/{boardId}:
-    get:
-      tags:
-      - Comment
-      summary: 게시글별 댓글 목록
-      operationId: viewComment
-      parameters:
-      - name: pageable
-        in: query
-        required: true
-        style: form
-        explode: true
-        schema:
-          $ref: '#/components/schemas/Pageable'
-      - name: boardId
+      - name: apartId
         in: path
         required: true
         style: simple
@@ -403,53 +292,22 @@ paths:
           format: int32
       responses:
         default:
-          description: target은 해당 cmtId의 답글임을 의미함<br>null이라면 일반 댓글
+          description: 아파트 별 동 목록 리스트
           content:
             '*/*':
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/Comment'
+                  type: string
                 x-content-type: '*/*'
-      x-swagger-router-controller: Comment
-  /api/boards/{boardId}:
+      x-swagger-router-controller: Apart
+  /api/Report/{idx}:
     get:
       tags:
-      - Board
-      summary: 게시글 상세 요청
+      - Report
       operationId: viewBoard
       parameters:
-      - name: boardId
-        in: path
-        required: true
-        style: simple
-        explode: false
-        schema:
-          type: integer
-          format: int32
-      responses:
-        default:
-          description: default response
-          content:
-            '*/*':
-              schema:
-                $ref: '#/components/schemas/BoardResponse'
-      x-swagger-router-controller: Board
-  /api/boards/searchByTagId/{tagId}:
-    get:
-      tags:
-      - Board
-      summary: 태그id로 게시글 검색 - 내림차순
-      operationId: searchBoardByTagId
-      parameters:
-      - name: pageable
-        in: query
-        required: true
-        style: form
-        explode: true
-        schema:
-          $ref: '#/components/schemas/Pageable'
-      - name: tagId
+      - name: idx
         in: path
         required: true
         style: simple
@@ -463,48 +321,12 @@ paths:
           content:
             '*/*':
               schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/BoardListResponse'
-                x-content-type: '*/*'
-      x-swagger-router-controller: Board
-  /api/boards/search/{text}:
+                $ref: '#/components/schemas/Report'
+      x-swagger-router-controller: Report
+  /api/Report/list:
     get:
       tags:
-      - Board
-      summary: 제목 및 내용으로 게시글 검색 - 내림차순
-      operationId: searchBoard
-      parameters:
-      - name: pageable
-        in: query
-        required: true
-        style: form
-        explode: true
-        schema:
-          $ref: '#/components/schemas/Pageable'
-      - name: text
-        in: path
-        required: true
-        style: simple
-        explode: false
-        schema:
-          type: string
-      responses:
-        "200":
-          description: OK
-          content:
-            '*/*':
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/BoardListResponse'
-                x-content-type: '*/*'
-      x-swagger-router-controller: Board
-  /api/boards/list:
-    get:
-      tags:
-      - Board
-      summary: 게시글 목록 요청 - 내림차순
+      - Report
       operationId: getAllBoardsDESC
       parameters:
       - name: pageable
@@ -520,48 +342,12 @@ paths:
           content:
             '*/*':
               schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/BoardListResponse'
-                x-content-type: '*/*'
-      x-swagger-router-controller: Board
-  /api/boards/list/{userId}:
+                $ref: '#/components/schemas/PageReport'
+      x-swagger-router-controller: Report
+  /api/Report/list/ASC:
     get:
       tags:
-      - Board
-      summary: 유저별 게시글 목록 요청 - 내림차순
-      operationId: getBoardsByUserId
-      parameters:
-      - name: pageable
-        in: query
-        required: true
-        style: form
-        explode: true
-        schema:
-          $ref: '#/components/schemas/Pageable'
-      - name: userId
-        in: path
-        required: true
-        style: simple
-        explode: false
-        schema:
-          type: string
-      responses:
-        "200":
-          description: OK
-          content:
-            '*/*':
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/BoardListResponse'
-                x-content-type: '*/*'
-      x-swagger-router-controller: Board
-  /api/boards/list/ASC:
-    get:
-      tags:
-      - Board
-      summary: 게시글 목록 요청 - 오름차순
+      - Report
       operationId: getAllBoardsASC
       parameters:
       - name: pageable
@@ -577,11 +363,8 @@ paths:
           content:
             '*/*':
               schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/BoardListResponse'
-                x-content-type: '*/*'
-      x-swagger-router-controller: Board
+                $ref: '#/components/schemas/PageReport'
+      x-swagger-router-controller: Report
   /:
     get:
       tags:
@@ -607,46 +390,58 @@ components:
           type: string
         password:
           type: string
-    CommentUpdateRequest:
+    Error:
       type: object
       properties:
-        cmtId:
+        errorId:
           type: integer
           format: int32
-        boardId:
-          type: integer
-          format: int32
-        userId:
+        message:
           type: string
-        target:
-          type: integer
-          format: int32
-        comment:
-          type: string
-    BoardUpdateRequest:
+      example:
+        errorId: 0
+        message: message
+    ResponseUser:
       type: object
       properties:
-        boardId:
-          type: integer
-          format: int32
+        error:
+          $ref: '#/components/schemas/Error'
+        data:
+          $ref: '#/components/schemas/User'
+      example:
+        data:
+          password: password
+          telNum: telNum
+          regDate: 2000-01-23T04:56:07.000+00:00
+          isAdmin: isAdmin
+          userName: userName
+          userId: userId
+        error:
+          errorId: 0
+          message: message
+    User:
+      type: object
+      properties:
         userId:
           type: string
-        title:
+        userName:
           type: string
-        content:
+        password:
           type: string
-        tagId:
-          type: array
-          items:
-            type: integer
-            format: int32
-        tagName:
-          type: array
-          items:
-            type: string
-        total:
-          type: integer
-          format: int32
+        telNum:
+          type: string
+        isAdmin:
+          type: string
+        regDate:
+          type: string
+          format: date-time
+      example:
+        password: password
+        telNum: telNum
+        regDate: 2000-01-23T04:56:07.000+00:00
+        isAdmin: isAdmin
+        userName: userName
+        userId: userId
     LoginRequest:
       type: object
       properties:
@@ -654,83 +449,116 @@ components:
           type: string
         password:
           type: string
-    PartyUserRequest:
+    ResponseString:
       type: object
       properties:
-        partyId:
-          type: integer
-          format: int32
-        userId:
+        error:
+          $ref: '#/components/schemas/Error'
+        data:
           type: string
-    CommentWriteRequest:
+      example:
+        data: data
+        error:
+          errorId: 0
+          message: message
+    ResponseObject:
       type: object
       properties:
-        boardId:
-          type: integer
-          format: int32
-        userId:
-          type: string
-        target:
-          type: integer
-          format: int32
-        comment:
-          type: string
-    CommentDeleteRequest:
+        error:
+          $ref: '#/components/schemas/Error'
+        data:
+          type: object
+      example:
+        data: {}
+        error:
+          errorId: 0
+          message: message
+    ApartInfoRequest:
       type: object
       properties:
-        cmtId:
-          type: integer
-          format: int32
-        userId:
+        apartName:
           type: string
-    BoardWriteRequest:
+        location:
+          type: string
+    ApartInfo:
       type: object
       properties:
-        userId:
-          type: string
-        title:
-          type: string
-        content:
-          type: string
-        total:
+        apartId:
           type: integer
           format: int32
-        tagName:
+        apartName:
+          type: string
+        location:
+          type: string
+      example:
+        apartName: apartName
+        apartId: 0
+        location: location
+    HoRequest:
+      type: object
+      properties:
+        apartId:
+          type: integer
+          format: int32
+        dong:
+          type: string
+    ResponseBoolean:
+      type: object
+      properties:
+        error:
+          $ref: '#/components/schemas/Error'
+        data:
+          type: boolean
+      example:
+        data: true
+        error:
+          errorId: 0
+          message: message
+    ResponseListApartInfo:
+      type: object
+      properties:
+        error:
+          $ref: '#/components/schemas/Error'
+        data:
           type: array
           items:
-            type: string
-    BoardDeleteRequest:
+            $ref: '#/components/schemas/ApartInfo'
+      example:
+        data:
+        - apartName: apartName
+          apartId: 0
+          location: location
+        - apartName: apartName
+          apartId: 0
+          location: location
+        error:
+          errorId: 0
+          message: message
+    Report:
       type: object
       properties:
-        boardId:
+        idx:
           type: integer
           format: int32
         userId:
           type: string
-    Tag:
-      type: object
-      properties:
-        tagId:
-          type: integer
-          format: int32
-        tagName:
+        reportDate:
+          type: string
+          format: date-time
+        occurDate:
+          type: string
+          format: date-time
+        detail:
+          type: string
+        isCheck:
           type: string
       example:
-        tagId: 0
-        tagName: tagName
-    TagRankResponse:
-      type: object
-      properties:
-        cnt:
-          type: integer
-          format: int32
-        tag:
-          $ref: '#/components/schemas/Tag'
-      example:
-        cnt: 0
-        tag:
-          tagId: 0
-          tagName: tagName
+        isCheck: isCheck
+        reportDate: 2000-01-23T04:56:07.000+00:00
+        detail: detail
+        idx: 0
+        userId: userId
+        occurDate: 2000-01-23T04:56:07.000+00:00
     Pageable:
       type: object
       properties:
@@ -746,133 +574,106 @@ components:
           type: array
           items:
             type: string
-    Board:
+    PageReport:
       type: object
       properties:
-        boardId:
+        totalElements:
+          type: integer
+          format: int64
+        totalPages:
           type: integer
           format: int32
-        userId:
-          type: string
-        title:
-          type: string
+        size:
+          type: integer
+          format: int32
         content:
-          type: string
-        partyId:
-          type: integer
-          format: int32
-        views:
-          type: integer
-          format: int32
-        writeDate:
-          type: string
-          format: date-time
-      example:
-        writeDate: 2000-01-23T04:56:07.000+00:00
-        boardId: 0
-        title: title
-        partyId: 6
-        userId: userId
-        content: content
-        views: 1
-    BoardListResponse:
-      type: object
-      properties:
-        board:
-          $ref: '#/components/schemas/Board'
-        tags:
           type: array
           items:
-            $ref: '#/components/schemas/Tag'
-      example:
-        board:
-          writeDate: 2000-01-23T04:56:07.000+00:00
-          boardId: 0
-          title: title
-          partyId: 6
-          userId: userId
-          content: content
-          views: 1
-        tags:
-        - tagId: 0
-          tagName: tagName
-        - tagId: 0
-          tagName: tagName
-    Comment:
-      type: object
-      properties:
-        cmtId:
+            $ref: '#/components/schemas/Report'
+        number:
           type: integer
           format: int32
-        boardId:
-          type: integer
-          format: int32
-        userId:
-          type: string
-        target:
-          type: integer
-          format: int32
-        comment:
-          type: string
-        isPublic:
+        sort:
+          $ref: '#/components/schemas/SortObject'
+        first:
           type: boolean
-        writeDate:
-          type: string
-          format: date-time
-      example:
-        cmtId: 0
-        writeDate: 2000-01-23T04:56:07.000+00:00
-        boardId: 6
-        isPublic: true
-        comment: comment
-        userId: userId
-        target: 1
-    BoardResponse:
-      type: object
-      properties:
-        board:
-          $ref: '#/components/schemas/Board'
-        party:
-          $ref: '#/components/schemas/Party'
-        tags:
-          type: array
-          items:
-            $ref: '#/components/schemas/Tag'
-      example:
-        board:
-          writeDate: 2000-01-23T04:56:07.000+00:00
-          boardId: 0
-          title: title
-          partyId: 6
-          userId: userId
-          content: content
-          views: 1
-        party:
-          total: 6
-          current: 1
-          partyId: 0
-          isActive: true
-        tags:
-        - tagId: 0
-          tagName: tagName
-        - tagId: 0
-          tagName: tagName
-    Party:
-      type: object
-      properties:
-        partyId:
+        last:
+          type: boolean
+        numberOfElements:
           type: integer
           format: int32
-        total:
-          type: integer
-          format: int32
-        current:
-          type: integer
-          format: int32
-        isActive:
+        pageable:
+          $ref: '#/components/schemas/PageableObject'
+        empty:
           type: boolean
       example:
-        total: 6
-        current: 1
-        partyId: 0
-        isActive: true
+        number: 5
+        size: 1
+        last: true
+        numberOfElements: 5
+        totalPages: 6
+        pageable:
+          paged: true
+          pageNumber: 9
+          offset: 2
+          pageSize: 7
+          unpaged: true
+          sort: null
+        sort:
+          unsorted: true
+          sorted: true
+          empty: true
+        content:
+        - isCheck: isCheck
+          reportDate: 2000-01-23T04:56:07.000+00:00
+          detail: detail
+          idx: 0
+          userId: userId
+          occurDate: 2000-01-23T04:56:07.000+00:00
+        - isCheck: isCheck
+          reportDate: 2000-01-23T04:56:07.000+00:00
+          detail: detail
+          idx: 0
+          userId: userId
+          occurDate: 2000-01-23T04:56:07.000+00:00
+        first: true
+        totalElements: 0
+        empty: true
+    PageableObject:
+      type: object
+      properties:
+        offset:
+          type: integer
+          format: int64
+        sort:
+          $ref: '#/components/schemas/SortObject'
+        pageSize:
+          type: integer
+          format: int32
+        pageNumber:
+          type: integer
+          format: int32
+        paged:
+          type: boolean
+        unpaged:
+          type: boolean
+      example:
+        paged: true
+        pageNumber: 9
+        offset: 2
+        pageSize: 7
+        unpaged: true
+        sort: null
+    SortObject:
+      type: object
+      properties:
+        empty:
+          type: boolean
+        sorted:
+          type: boolean
+        unsorted:
+          type: boolean
+      example:
+        unsorted: true
+        sorted: true
+        empty: true
