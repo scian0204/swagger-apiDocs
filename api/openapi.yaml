@@ -413,7 +413,7 @@ components:
           password: password
           telNum: telNum
           regDate: 2000-01-23T04:56:07.000+00:00
-          isAdmin: isAdmin
+          isAdmin: 6
           userName: userName
           userId: userId
         error:
@@ -431,7 +431,8 @@ components:
         telNum:
           type: string
         isAdmin:
-          type: string
+          type: integer
+          format: int32
         regDate:
           type: string
           format: date-time
@@ -439,7 +440,7 @@ components:
         password: password
         telNum: telNum
         regDate: 2000-01-23T04:56:07.000+00:00
-        isAdmin: isAdmin
+        isAdmin: 6
         userName: userName
         userId: userId
     LoginRequest:
@@ -577,12 +578,12 @@ components:
     PageReport:
       type: object
       properties:
-        totalElements:
-          type: integer
-          format: int64
         totalPages:
           type: integer
           format: int32
+        totalElements:
+          type: integer
+          format: int64
         size:
           type: integer
           format: int32
@@ -611,12 +612,12 @@ components:
         size: 1
         last: true
         numberOfElements: 5
-        totalPages: 6
+        totalPages: 0
         pageable:
           paged: true
-          pageNumber: 9
+          pageNumber: 7
           offset: 2
-          pageSize: 7
+          pageSize: 9
           unpaged: true
           sort: null
         sort:
@@ -637,7 +638,7 @@ components:
           userId: userId
           occurDate: 2000-01-23T04:56:07.000+00:00
         first: true
-        totalElements: 0
+        totalElements: 6
         empty: true
     PageableObject:
       type: object
@@ -647,10 +648,10 @@ components:
           format: int64
         sort:
           $ref: '#/components/schemas/SortObject'
-        pageSize:
+        pageNumber:
           type: integer
           format: int32
-        pageNumber:
+        pageSize:
           type: integer
           format: int32
         paged:
@@ -659,9 +660,9 @@ components:
           type: boolean
       example:
         paged: true
-        pageNumber: 9
+        pageNumber: 7
         offset: 2
-        pageSize: 7
+        pageSize: 9
         unpaged: true
         sort: null
     SortObject:

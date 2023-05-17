@@ -138,7 +138,7 @@ exports.signUp = function(body) {
     "password" : "password",
     "telNum" : "telNum",
     "regDate" : "2000-01-23T04:56:07.000+00:00",
-    "isAdmin" : "isAdmin",
+    "isAdmin" : 6,
     "userName" : "userName",
     "userId" : "userId"
   },
@@ -170,7 +170,7 @@ exports.updateUser = function(body) {
     "password" : "password",
     "telNum" : "telNum",
     "regDate" : "2000-01-23T04:56:07.000+00:00",
-    "isAdmin" : "isAdmin",
+    "isAdmin" : 6,
     "userName" : "userName",
     "userId" : "userId"
   },

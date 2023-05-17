@@ -32,12 +32,12 @@ exports.getAllBoardsASC = function(pageable) {
   "size" : 1,
   "last" : true,
   "numberOfElements" : 5,
-  "totalPages" : 6,
+  "totalPages" : 0,
   "pageable" : {
     "paged" : true,
-    "pageNumber" : 9,
+    "pageNumber" : 7,
     "offset" : 2,
-    "pageSize" : 7,
+    "pageSize" : 9,
     "unpaged" : true
   },
   "sort" : {
@@ -61,7 +61,7 @@ exports.getAllBoardsASC = function(pageable) {
     "occurDate" : "2000-01-23T04:56:07.000+00:00"
   } ],
   "first" : true,
-  "totalElements" : 0,
+  "totalElements" : 6,
   "empty" : true
 };
     if (Object.keys(examples).length > 0) {
@@ -86,12 +86,12 @@ exports.getAllBoardsDESC = function(pageable) {
   "size" : 1,
   "last" : true,
   "numberOfElements" : 5,
-  "totalPages" : 6,
+  "totalPages" : 0,
   "pageable" : {
     "paged" : true,
-    "pageNumber" : 9,
+    "pageNumber" : 7,
     "offset" : 2,
-    "pageSize" : 7,
+    "pageSize" : 9,
     "unpaged" : true
   },
   "sort" : {
@@ -115,7 +115,7 @@ exports.getAllBoardsDESC = function(pageable) {
     "occurDate" : "2000-01-23T04:56:07.000+00:00"
   } ],
   "first" : true,
-  "totalElements" : 0,
+  "totalElements" : 6,
   "empty" : true
 };
     if (Object.keys(examples).length > 0) {
