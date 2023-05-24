@@ -33,6 +33,16 @@ module.exports.getHoList = function getHoList (req, res, next, body) {
     });
 };
 
+module.exports.registAll = function registAll (req, res, next, body) {
+  Apart.registAll(body)
+    .then(function (response) {
+      utils.writeJson(res, response);
+    })
+    .catch(function (response) {
+      utils.writeJson(res, response);
+    });
+};
+
 module.exports.registApart = function registApart (req, res, next, body) {
   Apart.registApart(body)
     .then(function (response) {

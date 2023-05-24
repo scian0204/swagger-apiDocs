@@ -10,6 +10,10 @@ tags:
   description: 아파트 API
 - name: User
   description: 유저 API
+- name: Sensor
+  description: 센서 컨트롤러
+- name: WarningMessage
+  description: 유저별 경고 메시지 컨트롤러
 - name: Report
   description: 소음신고 API
 paths:
@@ -110,10 +114,49 @@ paths:
               schema:
                 $ref: '#/components/schemas/ResponseObject'
       x-swagger-router-controller: User
+  /api/sensor/report:
+    post:
+      tags:
+      - Sensor
+      operationId: reportNoise
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SensorReportRequest'
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ResponseObject'
+      x-swagger-router-controller: Sensor
+  /api/sensor/regist:
+    post:
+      tags:
+      - Sensor
+      operationId: regSensor
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Sensor'
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ResponseSensor'
+      x-swagger-router-controller: Sensor
   /api/apart/regist:
     post:
       tags:
       - Apart
+      summary: 아파트 등록 API
       operationId: registApart
       requestBody:
         content:
@@ -127,7 +170,30 @@ paths:
           content:
             '*/*':
               schema:
-                $ref: '#/components/schemas/ApartInfo'
+                $ref: '#/components/schemas/ResponseApartInfo'
+      x-swagger-router-controller: Apart
+  /api/apart/registAll:
+    post:
+      tags:
+      - Apart
+      summary: "아파트별 동, 호 일괄등록 API"
+      description: 아파트 등록 API에서 아파트 등록을 먼저 하고 해당 apartId를 넣을 것
+      operationId: registAll
+      requestBody:
+        description: "apartId: 등록할 아파트 id<br>dongs: 동 리스트<br>numOfFloor: 층수<br>numOfHo:\
+          \ 층별 호 수"
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ApartAllRequest'
+        required: true
+      responses:
+        default:
+          description: "등록한 해당 아파트 동, 호 리스트"
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ResponseListApart'
       x-swagger-router-controller: Apart
   /api/apart/ho:
     post:
@@ -148,10 +214,7 @@ paths:
           content:
             '*/*':
               schema:
-                type: array
-                items:
-                  type: string
-                x-content-type: '*/*'
+                $ref: '#/components/schemas/ResponseListString'
       x-swagger-router-controller: Apart
   /api/Report/write:
     post:
@@ -201,6 +264,27 @@ paths:
                 type: string
                 x-content-type: '*/*'
       x-swagger-router-controller: Report
+  /warningMsg/{userId}:
+    get:
+      tags:
+      - WarningMessage
+      operationId: getMessage
+      parameters:
+      - name: userId
+        in: path
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ResponseListWarningMessage'
+      x-swagger-router-controller: WarningMessage
   /api/users/logout:
     get:
       tags:
@@ -296,10 +380,7 @@ paths:
           content:
             '*/*':
               schema:
-                type: array
-                items:
-                  type: string
-                x-content-type: '*/*'
+                $ref: '#/components/schemas/ResponseListString'
       x-swagger-router-controller: Apart
   /api/Report/{idx}:
     get:
@@ -390,6 +471,8 @@ components:
           type: string
         password:
           type: string
+        telNum:
+          type: string
     Error:
       type: object
       properties:
@@ -474,6 +557,43 @@ components:
         error:
           errorId: 0
           message: message
+    SensorReportRequest:
+      type: object
+      properties:
+        sensorId:
+          type: string
+        noiseLevel:
+          type: number
+          format: double
+    Sensor:
+      type: object
+      properties:
+        sensorId:
+          type: string
+        apartIdx:
+          type: integer
+          format: int32
+        location:
+          type: string
+      example:
+        apartIdx: 0
+        location: location
+        sensorId: sensorId
+    ResponseSensor:
+      type: object
+      properties:
+        error:
+          $ref: '#/components/schemas/Error'
+        data:
+          $ref: '#/components/schemas/Sensor'
+      example:
+        data:
+          apartIdx: 0
+          location: location
+          sensorId: sensorId
+        error:
+          errorId: 0
+          message: message
     ApartInfoRequest:
       type: object
       properties:
@@ -495,6 +615,77 @@ components:
         apartName: apartName
         apartId: 0
         location: location
+    ResponseApartInfo:
+      type: object
+      properties:
+        error:
+          $ref: '#/components/schemas/Error'
+        data:
+          $ref: '#/components/schemas/ApartInfo'
+      example:
+        data:
+          apartName: apartName
+          apartId: 0
+          location: location
+        error:
+          errorId: 0
+          message: message
+    ApartAllRequest:
+      type: object
+      properties:
+        apartId:
+          type: integer
+          format: int32
+        dongs:
+          type: array
+          items:
+            type: string
+        numOfFloor:
+          type: integer
+          format: int32
+        numOfHo:
+          type: integer
+          format: int32
+    Apart:
+      type: object
+      properties:
+        apartIdx:
+          type: integer
+          format: int32
+        apartId:
+          type: integer
+          format: int32
+        dong:
+          type: string
+        ho:
+          type: string
+      example:
+        apartIdx: 0
+        ho: ho
+        apartId: 6
+        dong: dong
+    ResponseListApart:
+      type: object
+      properties:
+        error:
+          $ref: '#/components/schemas/Error'
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/Apart'
+      example:
+        data:
+        - apartIdx: 0
+          ho: ho
+          apartId: 6
+          dong: dong
+        - apartIdx: 0
+          ho: ho
+          apartId: 6
+          dong: dong
+        error:
+          errorId: 0
+          message: message
     HoRequest:
       type: object
       properties:
@@ -503,6 +694,62 @@ components:
           format: int32
         dong:
           type: string
+    ResponseListString:
+      type: object
+      properties:
+        error:
+          $ref: '#/components/schemas/Error'
+        data:
+          type: array
+          items:
+            type: string
+      example:
+        data:
+        - data
+        - data
+        error:
+          errorId: 0
+          message: message
+    ResponseListWarningMessage:
+      type: object
+      properties:
+        error:
+          $ref: '#/components/schemas/Error'
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/WarningMessage'
+      example:
+        data:
+        - regDate: 2000-01-23T04:56:07.000+00:00
+          idx: 0
+          message: message
+          userId: userId
+        - regDate: 2000-01-23T04:56:07.000+00:00
+          idx: 0
+          message: message
+          userId: userId
+        error:
+          errorId: 0
+          message: message
+    WarningMessage:
+      type: object
+      properties:
+        idx:
+          type: integer
+          format: int32
+        userId:
+          type: string
+        message:
+          type: string
+        regDate:
+          type: string
+          format: date-time
+      example:
+        regDate: 2000-01-23T04:56:07.000+00:00
+        idx: 0
+        message: message
+        userId: userId
     ResponseBoolean:
       type: object
       properties:
@@ -615,9 +862,9 @@ components:
         totalPages: 0
         pageable:
           paged: true
-          pageNumber: 7
+          pageNumber: 9
           offset: 2
-          pageSize: 9
+          pageSize: 7
           unpaged: true
           sort: null
         sort:
@@ -648,10 +895,10 @@ components:
           format: int64
         sort:
           $ref: '#/components/schemas/SortObject'
-        pageNumber:
+        pageSize:
           type: integer
           format: int32
-        pageSize:
+        pageNumber:
           type: integer
           format: int32
         paged:
@@ -660,9 +907,9 @@ components:
           type: boolean
       example:
         paged: true
-        pageNumber: 7
+        pageNumber: 9
         offset: 2
-        pageSize: 9
+        pageSize: 7
         unpaged: true
         sort: null
     SortObject:

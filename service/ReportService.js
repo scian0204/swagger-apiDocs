@@ -35,9 +35,9 @@ exports.getAllBoardsASC = function(pageable) {
   "totalPages" : 0,
   "pageable" : {
     "paged" : true,
-    "pageNumber" : 7,
+    "pageNumber" : 9,
     "offset" : 2,
-    "pageSize" : 9,
+    "pageSize" : 7,
     "unpaged" : true
   },
   "sort" : {
@@ -89,9 +89,9 @@ exports.getAllBoardsDESC = function(pageable) {
   "totalPages" : 0,
   "pageable" : {
     "paged" : true,
-    "pageNumber" : 7,
+    "pageNumber" : 9,
     "offset" : 2,
-    "pageSize" : 9,
+    "pageSize" : 7,
     "unpaged" : true
   },
   "sort" : {
