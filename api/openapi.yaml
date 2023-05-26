@@ -21,7 +21,7 @@ paths:
     put:
       tags:
       - User
-      summary: 유저 정보 수정
+      summary: 유저 정보 수정 API
       operationId: updateUser
       requestBody:
         content:
@@ -58,7 +58,7 @@ paths:
     post:
       tags:
       - User
-      summary: 회원가입
+      summary: 회원가입 API
       operationId: signUp
       requestBody:
         content:
@@ -78,7 +78,7 @@ paths:
     post:
       tags:
       - User
-      summary: 로그인
+      summary: 로그인 API
       operationId: login
       requestBody:
         content:
@@ -98,7 +98,7 @@ paths:
     post:
       tags:
       - User
-      summary: 회원 탈퇴
+      summary: 회원 탈퇴 API
       operationId: deleteUser
       requestBody:
         content:
@@ -118,6 +118,8 @@ paths:
     post:
       tags:
       - Sensor
+      summary: 센서 감지 데이터 등록 API
+      description: 센서에서 감지된 소음 데이터 DB에 저장 및 해당 유저 경고 메시지 전송 처리
       operationId: reportNoise
       requestBody:
         content:
@@ -137,6 +139,7 @@ paths:
     post:
       tags:
       - Sensor
+      summary: 센서 등록 API
       operationId: regSensor
       requestBody:
         content:
@@ -195,27 +198,6 @@ paths:
               schema:
                 $ref: '#/components/schemas/ResponseListApart'
       x-swagger-router-controller: Apart
-  /api/apart/ho:
-    post:
-      tags:
-      - Apart
-      summary: 아파트 동 별 호 목록 API
-      description: 아파트ID와 동으로 호 목록 검색하는 API
-      operationId: getHoList
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/HoRequest'
-        required: true
-      responses:
-        default:
-          description: 아파트 동 별 호 목록 리스트
-          content:
-            '*/*':
-              schema:
-                $ref: '#/components/schemas/ResponseListString'
-      x-swagger-router-controller: Apart
   /api/Report/write:
     post:
       tags:
@@ -268,6 +250,7 @@ paths:
     get:
       tags:
       - WarningMessage
+      summary: 유저별 경고메시지 목록 API
       operationId: getMessage
       parameters:
       - name: userId
@@ -289,7 +272,7 @@ paths:
     get:
       tags:
       - User
-      summary: 로그아웃
+      summary: 로그아웃 API
       operationId: logout
       responses:
         "200":
@@ -303,7 +286,7 @@ paths:
     get:
       tags:
       - User
-      summary: 로그인 여부 확인
+      summary: 로그인 여부 확인 API
       operationId: isLogin
       responses:
         default:
@@ -317,7 +300,7 @@ paths:
     get:
       tags:
       - User
-      summary: 아이디 중복 체크
+      summary: 아이디 중복 체크 API
       operationId: isIdDup
       parameters:
       - name: userId
@@ -357,6 +340,37 @@ paths:
             '*/*':
               schema:
                 $ref: '#/components/schemas/ResponseListApartInfo'
+      x-swagger-router-controller: Apart
+  /api/apart/ho/{apartId}/{dong}:
+    get:
+      tags:
+      - Apart
+      summary: 아파트 동 별 호 목록 API
+      description: 아파트ID와 동으로 호 목록 검색하는 API
+      operationId: getHoList
+      parameters:
+      - name: apartId
+        in: path
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: integer
+          format: int32
+      - name: dong
+        in: path
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      responses:
+        default:
+          description: 아파트 동 별 호 목록 리스트
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ResponseListString'
       x-swagger-router-controller: Apart
   /api/apart/dong/{apartId}:
     get:
@@ -446,20 +460,6 @@ paths:
               schema:
                 $ref: '#/components/schemas/PageReport'
       x-swagger-router-controller: Report
-  /:
-    get:
-      tags:
-      - home-controller
-      operationId: test
-      responses:
-        "200":
-          description: OK
-          content:
-            '*/*':
-              schema:
-                type: string
-                x-content-type: '*/*'
-      x-swagger-router-controller: HomeController
 components:
   schemas:
     UserRequest:
@@ -686,30 +686,6 @@ components:
         error:
           errorId: 0
           message: message
-    HoRequest:
-      type: object
-      properties:
-        apartId:
-          type: integer
-          format: int32
-        dong:
-          type: string
-    ResponseListString:
-      type: object
-      properties:
-        error:
-          $ref: '#/components/schemas/Error'
-        data:
-          type: array
-          items:
-            type: string
-      example:
-        data:
-        - data
-        - data
-        error:
-          errorId: 0
-          message: message
     ResponseListWarningMessage:
       type: object
       properties:
@@ -779,6 +755,22 @@ components:
         - apartName: apartName
           apartId: 0
           location: location
+        error:
+          errorId: 0
+          message: message
+    ResponseListString:
+      type: object
+      properties:
+        error:
+          $ref: '#/components/schemas/Error'
+        data:
+          type: array
+          items:
+            type: string
+      example:
+        data:
+        - data
+        - data
         error:
           errorId: 0
           message: message
@@ -901,9 +893,9 @@ components:
         pageNumber:
           type: integer
           format: int32
-        paged:
-          type: boolean
         unpaged:
+          type: boolean
+        paged:
           type: boolean
       example:
         paged: true

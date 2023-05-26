@@ -23,8 +23,8 @@ module.exports.getDongList = function getDongList (req, res, next, apartId) {
     });
 };
 
-module.exports.getHoList = function getHoList (req, res, next, body) {
-  Apart.getHoList(body)
+module.exports.getHoList = function getHoList (req, res, next, apartId, dong) {
+  Apart.getHoList(apartId, dong)
     .then(function (response) {
       utils.writeJson(res, response);
     })

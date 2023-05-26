@@ -2,7 +2,7 @@
 
 
 /**
- * 회원 탈퇴
+ * 회원 탈퇴 API
  *
  * body LoginRequest 
  * returns ResponseObject
@@ -27,7 +27,7 @@ exports.deleteUser = function(body) {
 
 
 /**
- * 아이디 중복 체크
+ * 아이디 중복 체크 API
  *
  * userId String 
  * returns ResponseBoolean
@@ -52,7 +52,7 @@ exports.isIdDup = function(userId) {
 
 
 /**
- * 로그인 여부 확인
+ * 로그인 여부 확인 API
  *
  * returns ResponseString
  **/
@@ -76,7 +76,7 @@ exports.isLogin = function() {
 
 
 /**
- * 로그인
+ * 로그인 API
  *
  * body LoginRequest 
  * returns ResponseString
@@ -101,7 +101,7 @@ exports.login = function(body) {
 
 
 /**
- * 로그아웃
+ * 로그아웃 API
  *
  * returns ResponseString
  **/
@@ -125,7 +125,7 @@ exports.logout = function() {
 
 
 /**
- * 회원가입
+ * 회원가입 API
  *
  * body UserRequest 
  * returns ResponseUser
@@ -157,7 +157,7 @@ exports.signUp = function(body) {
 
 
 /**
- * 유저 정보 수정
+ * 유저 정보 수정 API
  *
  * body UserRequest 
  * returns ResponseUser

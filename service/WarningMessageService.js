@@ -2,6 +2,7 @@
 
 
 /**
+ * 유저별 경고메시지 목록 API
  *
  * userId String 
  * returns ResponseListWarningMessage

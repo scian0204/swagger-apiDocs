@@ -65,10 +65,11 @@ exports.getDongList = function(apartId) {
  * 아파트 동 별 호 목록 API
  * 아파트ID와 동으로 호 목록 검색하는 API
  *
- * body HoRequest 
+ * apartId Integer 
+ * dong String 
  * returns ResponseListString
  **/
-exports.getHoList = function(body) {
+exports.getHoList = function(apartId,dong) {
   return new Promise(function(resolve, reject) {
     var examples = {};
     examples['application/json'] = {
